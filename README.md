@@ -1,80 +1,95 @@
-# Mission-Control-AI
+#  Mission Control AI — Space FIAPo
 
+Sistema inteligente de monitoramento e telemetria espacial desenvolvido em Python para a **Global Solution (GS2026.1)**. O projeto simula o ecossistema de uma sala de controle de solo, processando variáveis críticas de uma missão aeroespacial experimental através de regras lógicas estruturadas para mitigar falhas e apoiar a tomada de decisões.
 
-Sistema de simulação de controle de missão espacial desenvolvido em Python.  
-O projeto analisa ciclos de monitoramento e gera relatórios automáticos sobre o estado de uma missão espacial experimental.
+---
 
+##  Equipe: FIAPo Da Manga
+- **Projeto:** Mission Control AI
+- **Missão Experimental:** Space FIAPo
+- Pedro Andreassa Zamai RM: 569318
+- Pedro Yoshikado Garcia RM: 570449
+- Thiago Maluf Hofmann RM: 569852
 
-# Objetivo
+---
 
-- Armazenar dados simulados de uma missão espacial
-- Analisar ciclos de monitoramento
-- Gerar alertas automáticos
-- Calcular nível de risco por ciclo
-- Classificar o estado da missão
-- Identificar tendência (melhora ou piora)
-- Detectar área mais afetada
-- Exibir relatório final no terminal
+##  Objetivos do Sistema
 
-# Como funciona
+- **Processamento de Matrizes:** Armazenar e iterar sobre dados históricos de telemetria (6 ciclos completos).
+- **Modularização Avançada:** Arquitetura limpa dividida em 10 funções especialistas e independentes.
+- **Análise Multivariável:** Avaliação individual de 5 sistemas vitais por ciclo.
+- **Cálculo de Risco Ponderado:** Atribuição de score de risco acumulado.
+- **Diagnóstico de Tendência:** Identificação preditiva do comportamento da missão (Melhora, Piora ou Estabilidade).
+- **Foco de Danos:** Isolamento matemático da área de engenharia mais afetada por anomalias.
 
-A missão é representada por uma matriz chamada `dados_missao`.
-Cada linha representa um ciclo de monitoramento:
+---
 
+##  Arquitetura de Dados e Regras de Negócio
 
-[temperatura, comunicacao, bateria, oxigenio, estabilidade]
+Os dados são injetados através de uma matriz estruturada, onde cada linha representa um ciclo de leitura composto por:
+`[Temperatura, Comunicação, Bateria, Oxigênio, Estabilidade]`
 
-Exemplo:
+###  Matriz de Limiares Lógicos e Scores
 
-[25, 91, 86, 92, 88]
+O motor de análise avalia cada indicador de acordo com as seguintes regras de integridade:
 
-# Estrutura dos dados
+| Sistema | Intervalo / Condição | Classificação | Pontos de Risco | Mensagem de Alerta |
+| :--- | :--- | :--- | :---: | :--- |
+| **Temperatura Interna** | `< 18 °C` | ATENÇÃO | 1 | Temperatura baixa |
+| | `18 °C` a `30 °C` | NORMAL | 0 | Temperatura estável |
+| | `31 °C` a `35 °C` | ATENÇÃO | 1 | Temperatura elevada |
+| | `> 35 °C` | CRÍTICO | 2 | Risco de superaquecimento |
+| **Comunicação Base** | `< 30%` | CRÍTICO | 2 | Comunicação com a base em nível crítico |
+| | `30%` a `59%` | ATENÇÃO | 1 | Comunicação instável |
+| | `>= 60%` | NORMAL | 0 | Comunicação estável |
+| **Sistema de Energia** | `< 20%` | CRÍTICO | 2 | Bateria em nível crítico |
+| (Bateria) | `20%` a `49%` | ATENÇÃO | 1 | Bateria abaixo do recomendado |
+| | `>= 50%` | NORMAL | 0 | Energia estável |
+| **Suporte de Oxigênio** | `< 80%` | CRÍTICO | 2 | Oxigênio em nível crítico |
+| | `80%` a `89%` | ATENÇÃO | 1 | Oxigênio abaixo do ideal |
+| | `>= 90%` | NORMAL | 0 | Oxigênio adequado |
+| **Estabilidade** | `< 40%` | CRÍTICO | 2 | Estabilidade operacional crítica |
+| **Operacional** | `40%` a `69%` | ATENÇÃO | 1 | Estabilidade operacional reduzida |
+| | `>= 70%` | NORMAL | 0 | Estabilidade operacional adequada |
 
-Cada coluna representa um sistema da missão:
+---
 
-- Temperatura interna (°C)
-- Comunicação com a base (%)
-- Sistema de energia (%)
-- Suporte de oxigênio (%)
-- Estabilidade operacional (%)
+##  Lógica de Tomada de Decisão (Ciclos)
 
-# Regras de classificação
+A somatória dos pontos de risco gerados pelos 5 sistemas dita a classificação e a ação automática de contingência:
 
-Cada variável é classificada e recebe pontos de risco:
+* **0 a 2 pontos:** `MISSÃO ESTÁVEL`  
+  * *Recomendação:* Manter operação normal e continuar monitoramento.
+* **3 a 5 pontos:** `MISSÃO EM ATENÇÃO`  
+  * *Recomendação:* Monitorar sistemas em atenção e preparar plano de contingência.
+* **6 a 10 pontos:** `MISSÃO CRÍTICA`  
+  * *Recomendação:* Ativar modo de segurança e priorizar suporte à vida, energia e comunicação.
 
-- NORMAL = 0 ponto
-- ATENÇÃO = 1 ponto
-- CRÍTICO = 2 pontos
+---
 
-# Classificação do ciclo
+##  Estrutura de Arquivos
 
-A soma dos pontos define o estado do ciclo:
+```text
+mission-control-ai/
+│
+├── mission_control.py   # Script principal com motor lógico em Python 3
+└── README.md            # Documentação técnica do projeto
+```
 
-- 0 a 2 pontos → MISSÃO ESTÁVEL
-- 3 a 5 pontos → MISSÃO EM ATENÇÃO
-- 6 a 10 pontos → MISSÃO CRÍTICA
+---
 
-# Análise de tendência
+## Como Executar
+1. Certifique-se de que possui o Python 3.x instalado.
+2. Clone o repositório para a sua máquina local:
+```bash
+    git clone https://github.com/ThiagoMaluf/Mission-Control-AI
+```
+3. Acesse a pasta do projeto:
+```bash
+    cd Mission-Control-AI
+```
+4. Execute o script via terminal:
+```bash
+    python mission_control.py
+```
 
-O sistema compara o primeiro e o último ciclo:
-
-- Último > Primeiro → Missão piorou
-- Último < Primeiro → Missão melhorou
-- Igual → Missão estável
-
-# Área mais afetada
-
-O sistema soma os pontos de cada área ao longo de todos os ciclos e identifica qual sistema apresentou maior risco acumulado
-
-# Relatório final
-
-O sistema apresenta um relatório detalhado mostrando:
-    Ciclos analisados;
-    média de temperatura, comunicação, bateria, oxigênio e estabilidade;
-    Ciclo mais crítico;
-    Pontuação de risco;
-    Quantidade de ciclos críticos;
-    Situação da missão;
-    Área mais afetada;
-    Situação final da missão;
-    Conclusão.
